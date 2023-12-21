@@ -9,12 +9,23 @@ pipeline{
     stages{
         stage('checkout'){
             steps{
-                checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'github access', url: 'https://github.com/sreenivas449/java-hello-world-with-maven.git']]])
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'github access', url: 'https://github.com/manohar217/java-helloworld-mvn.git']]])
             }
         }
-        stage('build'){
+        stage('Build and Package'){
             steps{
-               bat 'mvn package'
+               sh 'mvn compile'
+               sh 'mvn package'
+               sh 'mvn install'
+               sh '
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+               sh 'docker build -t java-helloworld-mvn:latest .'
+               sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+               sh 'docker push'
+                }
             }
         }
     }
